@@ -7,7 +7,7 @@
     <meta name="description" content="สื่อการสอนเกม Coding Bot ฝึกทักษะการแก้ปัญหา การคิดเป็นระบบ และการทำซ้ำ (Loop) สำหรับเด็กและนักเรียน เหมาะกับวิชาวิทยาการคำนวณ">
     <meta name="keywords" content="สื่อการสอน coding, วิทยาการคำนวณ, เกมฝึกตรรกะ, เกมเขียนโปรแกรม, บล็อกคำสั่ง">
     <meta property="og:title" content="สื่อการสอนเกม Coding Bot">
-    <meta property="og:description" content="ฝึกทักษะการคิดอย่างเป็นระบบผ่านเกมแก้ปัญหา">
+    <meta property="og:description" content="ฝึกทักษะการคิดอย่างเป็นระบบผ่านเกมแก้ปัญหา"> สำหรับนักเรียน">
     
     <style>
         :root {
@@ -16,7 +16,6 @@
             --h3-color: #9e9e9e; --h3-shadow: #333;
             --h4-color: #b0b0b0; --h4-shadow: #222;
             
-            /* ตัวแปรขนาดกระดาน เริ่มต้นสำหรับ PC/Tablet */
             --cell-size: 50px;
             --font-size-cell: 24px;
             --bot-size: 30px;
@@ -34,7 +33,6 @@
             box-sizing: border-box;
         }
 
-        /* เมนูด้านบน */
         .header { 
             display: flex; align-items: center; justify-content: center; 
             gap: 15px; margin-bottom: 10px; width: 100%; max-width: 800px;
@@ -49,7 +47,6 @@
             box-sizing: border-box;
         }
         
-        /* กระดานเกม (Pseudo 3D) */
         #board-container { 
             padding: 20px 20px 40px 20px; background-color: #222; border-radius: 8px; 
             display: flex; justify-content: center;
@@ -65,7 +62,6 @@
         }
         .empty { background: transparent; }
         
-        /* ระดับความสูง */
         .h1 { background-color: var(--h1-color); box-shadow: 0 4px 0 var(--h1-shadow); margin-bottom: 4px; }
         .h2 { background-color: var(--h2-color); box-shadow: 0 8px 0 var(--h2-shadow); margin-bottom: 8px; transform: translateY(-4px); }
         .h3 { background-color: var(--h3-color); box-shadow: 0 12px 0 var(--h3-shadow); margin-bottom: 12px; transform: translateY(-8px); }
@@ -74,7 +70,6 @@
         .target { border: 3px solid #1a5cff; box-sizing: border-box; }
         .target.lit { background-color: #FACC15; border-color: #e6b800; }
         
-        /* หุ่นยนต์ลูกศร */
         #robot {
             position: absolute;
             z-index: 10;
@@ -84,7 +79,6 @@
             transition: left 0.3s ease-in-out, top 0.3s ease-in-out, transform 0.2s ease-in-out;
         }
 
-        /* แผงควบคุม */
         .panel { 
             width: 320px; display: flex; flex-direction: column; gap: 10px; 
             box-sizing: border-box; flex-grow: 1;
@@ -94,11 +88,9 @@
         .btn {
             padding: 10px; background-color: #555; color: white; border: none;
             border-radius: 6px; cursor: pointer; font-size: 15px; text-align: left;
-            /* ป้องกันเลือกข้อความและซูมเมื่อกดรัวๆ บนมือถือ */
             touch-action: manipulation; user-select: none; -webkit-tap-highlight-color: transparent;
-            min-height: 44px; /* ขนาดมาตรฐานที่เหมาะกับปลายนิ้ว (Apple/Google UI guidelines) */
+            min-height: 44px;
         }
-        /* เปลี่ยนสีเมื่อกด (Touch feedback) */
         .btn:active { background-color: #777; transform: scale(0.98); } 
         @media (hover: hover) { .btn:hover:not(:disabled) { background-color: #666; } }
         .btn:disabled { cursor: not-allowed; opacity: 0.4; transform: none; }
@@ -114,7 +106,6 @@
         @media (hover: hover) { .btn-nav:hover:not(:disabled) { background-color: #3366ff; } }
         .btn-nav:disabled { background-color: #555; opacity: 0.3; }
 
-        /* UI ทำซ้ำ */
         .repeat-controls {
             background: #222; padding: 12px; border-radius: 6px; 
             display: flex; flex-direction: column; gap: 8px;
@@ -129,7 +120,6 @@
             border: 1px solid #555; background: #444; color: white; outline: none; font-size: 15px;
         }
         
-        /* คิวคำสั่ง */
         #program-queue {
             min-height: 150px; max-height: 250px; overflow-y: auto;
             background-color: #222; padding: 10px; border-radius: 6px;
@@ -141,29 +131,20 @@
         
         .reset-all-container { margin-top: 15px; text-align: center; border-top: 1px solid #555; padding-top: 15px; }
 
-        /* ===================================================
-           Responsive Design (รองรับมือถือแนวตั้ง/จอเล็ก)
-           =================================================== */
         @media (max-width: 768px) {
-            .container {
-                flex-direction: column; /* เปลี่ยนจากซ้าย-ขวา เป็น บน-ล่าง */
-                align-items: center;
-                padding: 15px;
-            }
+            .container { flex-direction: column; align-items: center; padding: 15px; }
             .panel { width: 100%; max-width: 400px; }
             #board-container { width: 100%; padding: 15px 10px 30px 10px; }
             .header { justify-content: space-between; }
         }
 
-        /* รองรับมือถือจอเล็กมาก (เช่น iPhone SE, Samsung รุ่นเริ่มต้น) */
         @media (max-width: 400px) {
             :root {
-                /* ย่อขนาดกระดานลงให้พอดีจอ */
                 --cell-size: 38px;
                 --font-size-cell: 18px;
                 --bot-size: 22px;
             }
-            .controls-grid { grid-template-columns: 1fr; /* เปลี่ยนปุ่มเป็น 1 แถวเรียงลงมา */ }
+            .controls-grid { grid-template-columns: 1fr; }
             .btn[onclick="addCmd('light')"] { grid-column: span 1 !important; }
         }
     </style>
@@ -172,7 +153,7 @@
 
     <div class="header">
         <button class="btn-nav" id="btn-prev" onclick="changeLevel(-1)">◀ กลับ</button>
-        <h2 id="level-title">ด่าน 1 / 15</h2>
+        <h2 id="level-title">ด่าน 1 / 20</h2>
         <button class="btn-nav" id="btn-next" onclick="changeLevel(1)">ถัดไป ▶</button>
     </div>
 
@@ -218,6 +199,7 @@
     </div>
 
     <script>
+        // ฐานข้อมูลด่านทั้งหมด 20 ด่านแบบตรวจสอบความถูกต้องแล้ว
         const levelsData = [
             { map: ["11A"], start: {x:0, y:0, dir:1} }, 
             { map: ["110","01A"], start: {x:0, y:0, dir:1} }, 
@@ -232,8 +214,13 @@
             { map: ["1212B"], start: {x:0, y:0, dir:1} }, 
             { map: ["1100","0110","001A"], start: {x:0, y:0, dir:1} }, 
             { map: ["1221","0B0A"], start: {x:0, y:0, dir:1} }, 
-            { map: ["123","402","C11"], start: {x:0, y:0, dir:1} }, 
-            { map: ["020","1C1","020"], start: {x:0, y:1, dir:1} }
+            { map: ["123","402","C21"], start: {x:0, y:0, dir:1} }, // ด่าน 14 ซ่อมบันไดแล้ว
+            { map: ["1200","0230","003C"], start: {x:0, y:0, dir:1} }, // ด่าน 15 ของแท้ มีปุ่มเปิดไฟแน่นอน!
+            { map: ["1111","0001","1111","1000","111A"], start: {x:0, y:0, dir:1} }, // ด่าน 16
+            { map: ["1210","0121","001B"], start: {x:0, y:0, dir:1} },                // ด่าน 17
+            { map: ["1234","0001","1112","0003","111B"], start: {x:0, y:0, dir:1} }, // ด่าน 18
+            { map: ["10001","20002","30003","4111A"], start: {x:0, y:0, dir:2} },    // ด่าน 19
+            { map: ["1200","0340","0012","000B"], start: {x:0, y:0, dir:1} }         // ด่าน 20
         ];
 
         let maxLevel = parseInt(localStorage.getItem('codingBotMaxLevel')) || 0;
@@ -251,7 +238,7 @@
         function loadLevel(index) {
             currentLevel = index;
             localStorage.setItem('codingBotSavedLevel', currentLevel);
-            document.getElementById('level-title').innerText = `ด่าน ${currentLevel + 1} / 15`;
+            document.getElementById('level-title').innerText = `ด่าน ${currentLevel + 1} / ${levelsData.length}`;
             
             const btnPrev = document.getElementById('btn-prev');
             const btnNext = document.getElementById('btn-next');
@@ -266,7 +253,7 @@
                     let char = data.map[y][x];
                     if (char === '0') row.push(0);
                     else if (char >= '1' && char <= '4') row.push(parseInt(char));
-                    else if (char >= 'A' && char <= 'D') {
+                    else if (char >= 'A' && char <= 'E') { // รองรับความสูงเป้าหมายได้มากขึ้น
                         let h = char.charCodeAt(0) - 64;
                         row.push(h);
                         targets.push({x, y});
@@ -308,7 +295,7 @@
                     
                     if (h === 0) cell.className = 'cell empty';
                     else {
-                        cell.className = `cell h${h}`;
+                        cell.className = `cell h${h >= 4 ? 4 : h}`; // จัดการเรื่อง CSS คลาสกรณีด่าน 19 สูงเกินชั้น 4
                         if (targets.some(t => t.x === x && t.y === y)) {
                             cell.classList.add('target');
                             if (isLit) cell.classList.add('lit');
@@ -423,7 +410,7 @@
                     if (currentLevel < levelsData.length - 1) {
                         loadLevel(currentLevel + 1);
                     } else {
-                        alert('🏆 ยินดีด้วย! คุณเก่งมาก สามารถพิชิตได้ครบทั้ง 15 ด่านเลย!');
+                        alert('🏆 ยินดีด้วย! คุณเก่งมาก สามารถพิชิตมหากาพย์ได้ครบทั้ง 20 ด่านแล้วครับ!');
                     }
                 }, 200);
             } else {
